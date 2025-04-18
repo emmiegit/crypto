@@ -1,5 +1,6 @@
 # Artifacts
 target/
+Cargo.lock
 
 # Miscellaneous
 .*.sw?
