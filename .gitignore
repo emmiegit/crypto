@@ -1,0 +1,7 @@
+# Artifacts
+target/
+
+# Miscellaneous
+.*.sw?
+*~
+*#
