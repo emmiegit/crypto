@@ -37,6 +37,11 @@ where
     N: ArrayLength,
 {
     pub fn round(&mut self) {
-        todo!()
+        let round_key = self.key_schedule.next_key();
+        let mask = (self.round_function)(round_key, self.right.clone());
+        let new_left = self.right.clone();
+        let new_right = xor(self.left.clone(), mask);
+        self.left = new_left;
+        self.right = new_right;
     }
 }
