@@ -1,0 +1,34 @@
+pub fn xor(a: &mut [u8], b: &[u8]) {
+    assert_eq!(a.len(), b.len(), "Slice lengths do not match");
+    a.iter_mut().zip(b.iter()).for_each(|(a, b)| *a ^= b);
+}
+
+#[test]
+fn test_xor() {
+    macro_rules! check {
+        ($a:expr, $b:expr, $c:expr $(,)?) => {{
+            let mut a = $a;
+            let b = $b;
+
+            xor(&mut a[..], &b[..]);
+            assert_eq!(&a[..], &$c[..]);
+        }};
+    }
+
+    check!([], [], []);
+    check!(
+        [0xa5, 0xb4, 0xc3, 0xd2],
+        [0x12, 0x34, 0x56, 0x78],
+        [0xb7, 0x80, 0x95, 0xaa],
+    );
+    check!(
+        [0xff, 0xee, 0xdd, 0xcc, 0xbb, 0xaa],
+        [0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+        [0xff, 0xee, 0xdd, 0xcc, 0xbb, 0xaa],
+    );
+    check!(
+        [0x12, 0x34, 0x56, 0x78],
+        [0xff, 0xff, 0xff, 0xff],
+        [0xed, 0xcb, 0xa9, 0x87],
+    );
+}
