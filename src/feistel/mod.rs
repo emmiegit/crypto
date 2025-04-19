@@ -31,6 +31,16 @@ where
             right: ByteArray::from_slice(&plaintext[half..]).clone(),
         }
     }
+
+    /// Crudely prints the internal state of the cipher for testing purposes.
+    #[cfg(test)]
+    pub fn dump(&self) {
+        println!(
+            "'{}{}'",
+            String::from_utf8_lossy(self.left.as_slice()),
+            String::from_utf8_lossy(self.right.as_slice()),
+        );
+    }
 }
 
 impl<K, R, N> FeistelCipher<K, R, N>
