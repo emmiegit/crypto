@@ -1,3 +1,5 @@
+mod grass_1;
+
 use super::key_schedule::KeySchedule;
 use crate::{types::ByteArray, utils::xor};
 use generic_array::{
@@ -6,6 +8,7 @@ use generic_array::{
 };
 use std::ops::Mul;
 
+#[derive(Debug)]
 pub struct FeistelCipher<K, R, N: ArrayLength> {
     left: ByteArray<N>,
     right: ByteArray<N>,
