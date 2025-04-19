@@ -28,7 +28,7 @@ where
             key_schedule,
             round_function,
             left: ByteArray::from_slice(&plaintext[..half]).clone(),
-            right: ByteArray::from_slice(&plaintext[half + 1..]).clone(),
+            right: ByteArray::from_slice(&plaintext[half..]).clone(),
         }
     }
 }
