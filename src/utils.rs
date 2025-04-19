@@ -1,17 +1,23 @@
-pub fn xor(a: &mut [u8], b: &[u8]) {
-    assert_eq!(a.len(), b.len(), "Slice lengths do not match");
-    a.iter_mut().zip(b.iter()).for_each(|(a, b)| *a ^= b);
+use crate::types::ByteArray;
+use generic_array::ArrayLength;
+
+pub fn xor<N: ArrayLength>(x: ByteArray<N>, y: ByteArray<N>) -> ByteArray<N> {
+    let mut output = x;
+    output.iter_mut().zip(y.iter()).for_each(|(a, b)| *a ^= b);
+    output
 }
 
 #[test]
 fn test_xor() {
-    macro_rules! check {
-        ($a:expr, $b:expr, $c:expr $(,)?) => {{
-            let mut a = $a;
-            let b = $b;
+    use generic_array::GenericArray;
 
-            xor(&mut a[..], &b[..]);
-            assert_eq!(&a[..], &$c[..]);
+    macro_rules! check {
+        ($a:expr, $b:expr, $expected:expr $(,)?) => {{
+            let a = GenericArray::from_array($a);
+            let b = GenericArray::from_array($b);
+            let expected = GenericArray::from_array($expected);
+            let actual = xor(a, b);
+            assert_eq!(actual, expected, "Actual array does not match expected");
         }};
     }
 
