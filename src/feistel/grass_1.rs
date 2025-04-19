@@ -20,5 +20,19 @@ pub fn cipher(plaintext: Plaintext, key: Key) -> Grass1Cipher {
 }
 
 pub fn round(block: Block, round_key: RoundKey) -> Block {
-    todo!()
+    [0x01; 16].into()
+}
+
+#[test]
+fn grass_1() {
+    let plaintext = b"The secret phrase is 'befuddle'!";
+    let key = [0; 16];
+    let mut cipher = cipher(*plaintext, key);
+    cipher.dump();
+
+    cipher.round();
+    cipher.dump();
+
+    cipher.round();
+    cipher.dump();
 }
