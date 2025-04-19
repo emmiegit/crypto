@@ -36,12 +36,12 @@ where
 impl<K, R, N> FeistelCipher<K, R, N>
 where
     K: KeySchedule,
-    R: FnMut(K::SubKey, ByteArray<N>) -> ByteArray<N>,
+    R: FnMut(ByteArray<N>, K::SubKey) -> ByteArray<N>,
     N: ArrayLength,
 {
     pub fn round(&mut self) {
         let round_key = self.key_schedule.next_key();
-        let mask = (self.round_function)(round_key, self.right.clone());
+        let mask = (self.round_function)(self.right.clone(), round_key);
         let new_left = self.right.clone();
         let new_right = xor(self.left.clone(), mask);
         self.left = new_left;
