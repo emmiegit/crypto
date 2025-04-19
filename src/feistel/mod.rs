@@ -1,4 +1,4 @@
-pub mod grass_1;
+pub mod grass_0;
 
 use super::key_schedule::KeySchedule;
 use crate::{types::ByteArray, utils::xor};
@@ -31,16 +31,6 @@ where
             right: ByteArray::from_slice(&plaintext[half..]).clone(),
         }
     }
-
-    /// Crudely prints the internal state of the cipher for testing purposes.
-    #[cfg(test)]
-    pub fn dump(&self) {
-        println!(
-            "'{}{}'",
-            String::from_utf8_lossy(self.left.as_slice()),
-            String::from_utf8_lossy(self.right.as_slice()),
-        );
-    }
 }
 
 impl<K, R, N> FeistelCipher<K, R, N>
@@ -56,5 +46,24 @@ where
         let new_right = xor(self.left.clone(), mask);
         self.left = new_left;
         self.right = new_right;
+    }
+
+    pub fn run_rounds(&mut self, count: usize) {
+        for _ in 0..count {
+            self.round();
+
+            #[cfg(test)]
+            self.dump();
+        }
+    }
+
+    /// Crudely prints the internal state of the cipher for testing purposes.
+    #[cfg(test)]
+    pub fn dump(&self) {
+        println!(
+            "'{}{}'",
+            String::from_utf8_lossy(self.left.as_slice()),
+            String::from_utf8_lossy(self.right.as_slice()),
+        );
     }
 }
