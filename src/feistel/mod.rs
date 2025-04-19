@@ -1,4 +1,4 @@
-mod grass_1;
+pub mod grass_1;
 
 use super::key_schedule::KeySchedule;
 use crate::{types::ByteArray, utils::xor};
