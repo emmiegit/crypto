@@ -1,1 +1,42 @@
+use super::key_schedule::KeySchedule;
+use crate::{types::ByteArray, utils::xor};
+use generic_array::{
+    ArrayLength,
+    typenum::{Prod, U2},
+};
+use std::ops::Mul;
 
+pub struct FeistelCipher<K, R, N: ArrayLength> {
+    left: ByteArray<N>,
+    right: ByteArray<N>,
+    key_schedule: K,
+    round_function: R,
+}
+
+impl<K, R, N> FeistelCipher<K, R, N>
+where
+    N: ArrayLength + Mul<U2>,
+    Prod<N, U2>: ArrayLength,
+{
+    pub fn new(plaintext: ByteArray<Prod<N, U2>>, key_schedule: K, round_function: R) -> Self {
+        let half = plaintext.len() / 2;
+
+        FeistelCipher {
+            key_schedule,
+            round_function,
+            left: ByteArray::from_slice(&plaintext[..half]).clone(),
+            right: ByteArray::from_slice(&plaintext[half + 1..]).clone(),
+        }
+    }
+}
+
+impl<K, R, N> FeistelCipher<K, R, N>
+where
+    K: KeySchedule,
+    R: FnMut(K::SubKey, ByteArray<N>) -> ByteArray<N>,
+    N: ArrayLength,
+{
+    pub fn round(&mut self) {
+        todo!()
+    }
+}
