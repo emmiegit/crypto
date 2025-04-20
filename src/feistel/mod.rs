@@ -85,8 +85,7 @@ where
             fn get_char(b: u8) -> Option<char> {
                 match b {
                     // Printable range for ASCII
-                    0x20..0x7e => char::from_u32(u32::from(b)), // Should always be Some(), but we
-                                                                // can avoid a rewrap here.
+                    0x20..0x7e => char::from_u32(u32::from(b)), // Should always be Some(), but we can avoid a rewrap here.
                     _ => None,
                 }
             }
