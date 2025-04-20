@@ -22,12 +22,7 @@ pub type Grass0Decrypt = Grass0Cipher<ReverseKeySchedule<RoundKey>>;
 pub const ROUNDS: usize = 4;
 
 pub fn encrypt(plaintext: Text, key: Key) -> Grass0Encrypt {
-    FeistelCipher::new(
-        plaintext,
-        TeaKeySchedule::new(key),
-        round,
-        ROUNDS,
-    )
+    FeistelCipher::new(plaintext, TeaKeySchedule::new(key), round, ROUNDS)
 }
 
 pub fn decrypt(ciphertext: Text, key: Key) -> Grass0Decrypt {
@@ -53,6 +48,8 @@ fn grass_0() {
     cipher.dump();
     cipher.run();
     let ciphertext = cipher.result();
+
+    println!("----------------------------------------------------------------------------------------------------");
 
     let mut cipher = decrypt(ciphertext, key);
     cipher.dump();
