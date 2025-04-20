@@ -43,6 +43,14 @@ where
             _round_key: PhantomData,
         }
     }
+
+    pub fn result(&self) -> ByteArray<Prod<N, U2>> {
+        let mut ciphertext = ByteArray::default();
+        let half = ciphertext.len() / 2;
+        (&mut ciphertext[..half]).copy_from_slice(&self.left);
+        (&mut ciphertext[half..]).copy_from_slice(&self.right);
+        ciphertext
+    }
 }
 
 impl<KS, K, R, N> FeistelCipher<KS, K, R, N>
@@ -61,7 +69,7 @@ where
         self.rounds -= 1;
     }
 
-    pub fn run_rounds(&mut self) {
+    pub fn run(&mut self) {
         for _ in 0..self.rounds {
             self.round();
 
