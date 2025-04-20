@@ -34,3 +34,20 @@ fn slice_to_u64(bytes: &[u8]) -> u64 {
     array.as_mut_slice().copy_from_slice(&bytes);
     u64::from_be_bytes(array)
 }
+
+#[test]
+fn test_bytes() {
+    macro_rules! check {
+        ($num:expr, $bytes:expr $(,)?) => {
+            assert_eq!(
+                slice_to_u64(&$bytes),
+                $num,
+                "Actual extracted value does not match expected",
+            );
+        };
+    }
+
+    check!(0xdeadbeef00ff11ee, [0xde, 0xad, 0xbe, 0xef, 0x00, 0xff, 0x11, 0xee]);
+    check!(0x0123456789abcdef, [0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]);
+    check!(0x00000000ffffffff, [0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff]);
+}
