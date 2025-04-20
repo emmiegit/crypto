@@ -3,9 +3,9 @@ use crate::{
     key_schedule::{ReverseKeySchedule, TeaKeySchedule},
     types::ByteArray,
 };
-use generic_array::typenum::U16;
+use generic_array::typenum::{U16, U32};
 
-pub type Plaintext = [u8; 32];
+pub type Text = ByteArray<U32>;
 pub type Key = [u8; 16];
 
 pub type Block = ByteArray<U16>;
@@ -18,18 +18,18 @@ pub type Grass1Decrypt = Grass1Cipher<ReverseKeySchedule<RoundKey>>;
 
 pub const ROUNDS: usize = 4;
 
-pub fn encrypt(plaintext: Plaintext, key: Key) -> Grass1Encrypt {
+pub fn encrypt(plaintext: Text, key: Key) -> Grass1Encrypt {
     FeistelCipher::new(
-        ByteArray::from_array(plaintext),
+        plaintext,
         TeaKeySchedule::new(key),
         round,
         ROUNDS,
     )
 }
 
-pub fn decrypt(plaintext: Plaintext, key: Key) -> Grass1Decrypt {
+pub fn decrypt(ciphertext: Text, key: Key) -> Grass1Decrypt {
     FeistelCipher::new(
-        ByteArray::from_array(plaintext),
+        ciphertext,
         ReverseKeySchedule::new(TeaKeySchedule::new(key), ROUNDS),
         round,
         ROUNDS,
@@ -42,9 +42,5 @@ pub fn round(block: Block, round_key: RoundKey) -> Block {
 
 #[test]
 fn grass_1() {
-    let plaintext = b"The secret phrase is 'befuddle'!";
-    let key = [0; 16];
-    let mut cipher = cipher(*plaintext, key);
-    cipher.dump();
-    cipher.run_rounds(8);
+    todo!()
 }
