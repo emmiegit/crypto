@@ -81,10 +81,35 @@ where
     /// Crudely prints the internal state of the cipher for testing purposes.
     #[cfg(test)]
     pub fn dump(&self) {
-        println!(
-            "'{}{}'",
-            String::from_utf8_lossy(self.left.as_slice()),
-            String::from_utf8_lossy(self.right.as_slice()),
-        );
+        fn print_bytes(bytes: &[u8]) {
+            fn get_char(b: u8) -> Option<char> {
+                match b {
+                    // Printable range for ASCII
+                    0x20..0x7e => char::from_u32(u32::from(b)), // Should always be Some(), but we
+                                                                // can avoid a rewrap here.
+                    _ => None,
+                }
+            }
+
+            for b in bytes.iter().copied() {
+                let c = get_char(b).unwrap_or('.');
+                print!("{c}");
+            }
+        }
+
+        fn print_hex(bytes: &[u8]) {
+            for b in bytes.iter().copied() {
+                print!("{b:02x}");
+            }
+        }
+
+        print!("\"");
+        print_bytes(self.left.as_slice());
+        print_bytes(self.right.as_slice());
+        print!("\" ");
+        print_hex(self.left.as_slice());
+        print!(" ");
+        print_hex(self.right.as_slice());
+        println!();
     }
 }
