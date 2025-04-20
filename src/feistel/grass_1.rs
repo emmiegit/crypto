@@ -5,7 +5,7 @@ use super::FeistelCipher;
 use crate::{
     aes::S_BOX,
     key_schedule::{ReverseKeySchedule, SimpleRotateKeySchedule},
-    types::ByteArray,
+    types::{ByteArray, CipherMode},
 };
 use generic_array::typenum::{U16, U32};
 
@@ -20,10 +20,16 @@ pub type Grass1Cipher<K> = FeistelCipher<K, RoundKey, Grass1RoundFn, U16>;
 pub type Grass1Encrypt = Grass1Cipher<SimpleRotateKeySchedule>;
 pub type Grass1Decrypt = Grass1Cipher<ReverseKeySchedule<RoundKey>>;
 
-pub const ROUNDS: usize = 8;
+pub const ROUNDS: usize = 1;
 
 pub fn encrypt(plaintext: Text, key: Key) -> Grass1Encrypt {
-    FeistelCipher::new(plaintext, SimpleRotateKeySchedule::new(key), round, ROUNDS)
+    FeistelCipher::new(
+        plaintext,
+        SimpleRotateKeySchedule::new(key),
+        round,
+        ROUNDS,
+        CipherMode::Encrypt,
+    )
 }
 
 pub fn decrypt(ciphertext: Text, key: Key) -> Grass1Decrypt {
@@ -32,15 +38,18 @@ pub fn decrypt(ciphertext: Text, key: Key) -> Grass1Decrypt {
         ReverseKeySchedule::new(SimpleRotateKeySchedule::new(key), ROUNDS),
         round,
         ROUNDS,
+        CipherMode::Decrypt,
     )
 }
 
 pub fn round(mut block: Block, round_key: RoundKey) -> Block {
+    /*
     block
         .as_mut_slice()
         .iter_mut()
         .zip(round_key.as_slice().iter().copied())
-        .for_each(|(a, b)| *a ^= S_BOX[usize::from(b)]);
+        .for_each(|(a, b)| *a ^= b);
+    */
 
     block
 }
@@ -48,6 +57,7 @@ pub fn round(mut block: Block, round_key: RoundKey) -> Block {
 #[test]
 fn grass_1() {
     let plaintext = b"The secret phrase is 'befuddle'!";
+    //let key = [0xde, 0xad, 0xbe, 0xef, 0x00, 0xff, 0x11, 0x22, 0x33, 0xee, 0xdd, 0xcc, 0xca, 0xfe, 0xba, 0xbe];
     let key = [0x01; 16];
 
     let plaintext = ByteArray::from_slice(plaintext).clone();
@@ -56,12 +66,13 @@ fn grass_1() {
     cipher.run();
     let ciphertext = cipher.result();
 
-    println!("----------------------------------------------------------------------------------------------------");
+    println!(
+        "----------------------------------------------------------------------------------------------------"
+    );
 
     let mut cipher = decrypt(ciphertext, key);
-    cipher.dump();
     cipher.run();
     let new_plaintext = cipher.result();
 
-    // TODO
+    assert_eq!(plaintext, new_plaintext);
 }

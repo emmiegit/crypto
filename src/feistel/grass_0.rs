@@ -4,7 +4,7 @@
 use super::FeistelCipher;
 use crate::{
     key_schedule::{ReverseKeySchedule, TeaKeySchedule},
-    types::ByteArray,
+    types::{ByteArray, CipherMode},
 };
 use generic_array::typenum::{U16, U32};
 
@@ -22,7 +22,13 @@ pub type Grass0Decrypt = Grass0Cipher<ReverseKeySchedule<RoundKey>>;
 pub const ROUNDS: usize = 4;
 
 pub fn encrypt(plaintext: Text, key: Key) -> Grass0Encrypt {
-    FeistelCipher::new(plaintext, TeaKeySchedule::new(key), round, ROUNDS)
+    FeistelCipher::new(
+        plaintext,
+        TeaKeySchedule::new(key),
+        round,
+        ROUNDS,
+        CipherMode::Encrypt,
+    )
 }
 
 pub fn decrypt(ciphertext: Text, key: Key) -> Grass0Decrypt {
@@ -31,6 +37,7 @@ pub fn decrypt(ciphertext: Text, key: Key) -> Grass0Decrypt {
         ReverseKeySchedule::new(TeaKeySchedule::new(key), ROUNDS),
         round,
         ROUNDS,
+        CipherMode::Decrypt,
     )
 }
 
@@ -49,7 +56,9 @@ fn grass_0() {
     cipher.run();
     let ciphertext = cipher.result();
 
-    println!("----------------------------------------------------------------------------------------------------");
+    println!(
+        "----------------------------------------------------------------------------------------------------"
+    );
 
     let mut cipher = decrypt(ciphertext, key);
     cipher.dump();

@@ -2,7 +2,10 @@ pub mod grass_0;
 pub mod grass_1;
 
 use super::key_schedule::KeySchedule;
-use crate::{types::ByteArray, utils::xor};
+use crate::{
+    types::{ByteArray, CipherMode},
+    utils::xor,
+};
 use generic_array::{
     ArrayLength,
     typenum::{Prod, U2},
@@ -17,6 +20,7 @@ pub struct FeistelCipher<KS, K, R, N: ArrayLength> {
     round_function: R,
     rounds: usize,
     _round_key: PhantomData<K>,
+    mode: CipherMode,
 }
 
 impl<KS, K, R, N> FeistelCipher<KS, K, R, N>
@@ -30,6 +34,7 @@ where
         key_schedule: KS,
         round_function: R,
         rounds: usize,
+        mode: CipherMode,
     ) -> Self {
         let half = plaintext.len() / 2;
 
@@ -40,6 +45,7 @@ where
             round_function,
             rounds,
             _round_key: PhantomData,
+            mode,
         }
     }
 
@@ -68,7 +74,7 @@ where
         self.rounds -= 1;
     }
 
-    pub fn flip(&mut self) {
+    pub fn swap(&mut self) {
         mem::swap(&mut self.left, &mut self.right);
 
         #[cfg(test)]
@@ -76,11 +82,19 @@ where
     }
 
     pub fn run(&mut self) {
+        if self.mode == CipherMode::Decrypt {
+            self.swap();
+        }
+
         for _ in 0..self.rounds {
             self.round();
 
             #[cfg(test)]
             self.dump();
+        }
+
+        if self.mode == CipherMode::Decrypt {
+            self.swap();
         }
     }
 
