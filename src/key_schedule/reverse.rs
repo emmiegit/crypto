@@ -11,14 +11,14 @@ use std::fmt::Debug;
 /// where the process is simply running the same (or similar)
 /// algorithm but with the round keys in reverse order.
 #[derive(Debug)]
-pub struct ReverseKeySchedule<B: Debug> {
-    sequence: Vec<B>,
+pub struct ReverseKeySchedule<K: Debug> {
+    sequence: Vec<K>,
 }
 
-impl<B: Debug> ReverseKeySchedule<B> {
-    pub fn new<K>(mut key_schedule: K, round_count: usize) -> Self
+impl<K: Debug> ReverseKeySchedule<K> {
+    pub fn new<KS>(mut key_schedule: KS, round_count: usize) -> Self
     where
-        K: KeySchedule<SubKey = B>,
+        KS: KeySchedule<K>,
     {
         let mut sequence = Vec::new();
 
@@ -30,10 +30,8 @@ impl<B: Debug> ReverseKeySchedule<B> {
     }
 }
 
-impl<B: Debug> KeySchedule for ReverseKeySchedule<B> {
-    type SubKey = B;
-
-    fn next_key(&mut self) -> B {
+impl<K: Debug> KeySchedule<K> for ReverseKeySchedule<K> {
+    fn next_key(&mut self) -> K {
         self.sequence
             .pop()
             .expect("Attempted to request more keys than prepared")

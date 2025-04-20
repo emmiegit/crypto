@@ -1,5 +1,7 @@
 use super::KeySchedule;
 
+pub type RoundKey = [u8; 4];
+
 /// Key schedule from TEA.
 ///
 /// 128-bit key which continually yields each 32-bit chunk.
@@ -15,9 +17,7 @@ impl TeaKeySchedule {
     }
 }
 
-impl KeySchedule for TeaKeySchedule {
-    type SubKey = [u8; 4];
-
+impl KeySchedule<RoundKey> for TeaKeySchedule {
     fn next_key(&mut self) -> [u8; 4] {
         let start = usize::from(self.index * 4);
         let slice = &self.key[start..start + 4];
