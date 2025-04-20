@@ -39,7 +39,7 @@ pub fn decrypt(plaintext: Plaintext, key: Key) -> Grass0Decrypt {
     )
 }
 
-pub fn round(block: Block, round_key: RoundKey) -> Block {
+pub fn round(_block: Block, _round_key: RoundKey) -> Block {
     ByteArray::from_array([0x00; 16])
 }
 
