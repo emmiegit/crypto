@@ -70,6 +70,9 @@ where
 
     pub fn flip(&mut self) {
         mem::swap(&mut self.left, &mut self.right);
+
+        #[cfg(test)]
+        self.dump();
     }
 
     pub fn run(&mut self) {
