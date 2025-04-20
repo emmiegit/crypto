@@ -7,8 +7,7 @@ use generic_array::{
     ArrayLength,
     typenum::{Prod, U2},
 };
-use std::marker::PhantomData;
-use std::ops::Mul;
+use std::{marker::PhantomData, mem, ops::Mul};
 
 #[derive(Debug)]
 pub struct FeistelCipher<KS, K, R, N: ArrayLength> {
@@ -67,6 +66,10 @@ where
         self.left = new_left;
         self.right = new_right;
         self.rounds -= 1;
+    }
+
+    pub fn flip(&mut self) {
+        mem::swap(&mut self.left, &mut self.right);
     }
 
     pub fn run(&mut self) {
