@@ -20,7 +20,7 @@ pub type Grass1Cipher<K> = FeistelCipher<K, RoundKey, Grass1RoundFn, U16>;
 pub type Grass1Encrypt = Grass1Cipher<SimpleRotateKeySchedule>;
 pub type Grass1Decrypt = Grass1Cipher<ReverseKeySchedule<RoundKey>>;
 
-pub const ROUNDS: usize = 1;
+pub const ROUNDS: usize = 4;
 
 pub fn encrypt(plaintext: Text, key: Key) -> Grass1Encrypt {
     FeistelCipher::new(
@@ -43,13 +43,11 @@ pub fn decrypt(ciphertext: Text, key: Key) -> Grass1Decrypt {
 }
 
 pub fn round(mut block: Block, round_key: RoundKey) -> Block {
-    /*
     block
         .as_mut_slice()
         .iter_mut()
         .zip(round_key.as_slice().iter().copied())
         .for_each(|(a, b)| *a ^= b);
-    */
 
     block
 }
