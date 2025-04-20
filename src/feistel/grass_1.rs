@@ -20,7 +20,7 @@ pub type Grass1Cipher<K> = FeistelCipher<K, RoundKey, Grass1RoundFn, U16>;
 pub type Grass1Encrypt = Grass1Cipher<SimpleRotateKeySchedule>;
 pub type Grass1Decrypt = Grass1Cipher<ReverseKeySchedule<RoundKey>>;
 
-pub const ROUNDS: usize = 4;
+pub const ROUNDS: usize = 16;
 
 pub fn encrypt(plaintext: Text, key: Key) -> Grass1Encrypt {
     FeistelCipher::new(
@@ -47,7 +47,7 @@ pub fn round(mut block: Block, round_key: RoundKey) -> Block {
         .as_mut_slice()
         .iter_mut()
         .zip(round_key.as_slice().iter().copied())
-        .for_each(|(a, b)| *a ^= b);
+        .for_each(|(a, b)| *a ^= S_BOX[usize::from(b)]);
 
     block
 }
@@ -55,8 +55,10 @@ pub fn round(mut block: Block, round_key: RoundKey) -> Block {
 #[test]
 fn grass_1() {
     let plaintext = b"The secret phrase is 'befuddle'!";
-    //let key = [0xde, 0xad, 0xbe, 0xef, 0x00, 0xff, 0x11, 0x22, 0x33, 0xee, 0xdd, 0xcc, 0xca, 0xfe, 0xba, 0xbe];
-    let key = [0x01; 16];
+    let key = [
+        0xde, 0xad, 0xbe, 0xef, 0x00, 0xff, 0x11, 0x22, 0x33, 0xee, 0xdd, 0xcc, 0xca, 0xfe, 0xba,
+        0xbe,
+    ];
 
     let plaintext = ByteArray::from_slice(plaintext).clone();
     let mut cipher = encrypt(plaintext, key);
